@@ -84,6 +84,7 @@ window.addEventListener("resize", () => {
 
 
 
+
 const swiper = new Swiper(".k-possibilities-swiper", {
   spaceBetween: 10,
   slidesPerView: 1,
