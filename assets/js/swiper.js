@@ -1,4 +1,5 @@
 let reviewsSwiper = null;
+let scrolling = true;
 let lastMode = null;
 
 function initReviewsSwiper() {
@@ -16,25 +17,18 @@ function initReviewsSwiper() {
 
   reviewsSwiper = new Swiper(".l-reviews-swiper", {
     direction: isDesktop ? "vertical" : "horizontal",
-    loop: true,
-    speed: isDesktop ? 6000 : 600,
-    allowTouchMove: !isDesktop,
-
-    autoplay: isDesktop
-      ? {
-          delay: 0,
-          disableOnInteraction: false,
-          pauseOnMouseEnter: false,
-        }
-      : false,
-
     slidesPerView: isDesktop ? 3 : 1,
     spaceBetween: 10,
-
-    pagination: {
-      el: ".reviews-pagination",
-      clickable: true,
+    freeMode: {
+      enabled: isDesktop,
+      momentum: false,
     },
+     pagination: {
+    el: ".reviews-pagination",
+    clickable: true,
+  },
+    loop: true,
+    allowTouchMove: !isDesktop,
 
     breakpoints: {
       320: { slidesPerView: 1 },
@@ -44,26 +38,45 @@ function initReviewsSwiper() {
     },
   });
 
-  if (isDesktop) {
-    const wrapper = document.querySelector(".l-reviews-swiper");
+  if (isDesktop) startInfiniteScroll();
+}
 
-    wrapper.addEventListener("mouseenter", () => {
-      if (reviewsSwiper?.autoplay) {
-        reviewsSwiper.autoplay.stop();
-      }
-    });
+function startInfiniteScroll() {
+  function animate() {
+    if (!scrolling) return requestAnimationFrame(animate);
 
-    wrapper.addEventListener("mouseleave", () => {
-      if (reviewsSwiper?.autoplay) {
-        reviewsSwiper.autoplay.start();
-      }
-    });
+    const speed = 0.35; 
+
+    reviewsSwiper.translate -= speed;
+
+    const maxTranslate = reviewsSwiper.wrapperEl.scrollHeight / 2;
+
+    if (Math.abs(reviewsSwiper.translate) >= maxTranslate) {
+      reviewsSwiper.translate = 0;
+    }
+
+    reviewsSwiper.wrapperEl.style.transform =
+      `translate3d(0, ${reviewsSwiper.translate}px, 0)`;
+
+    requestAnimationFrame(animate);
   }
+
+  requestAnimationFrame(animate);
+
+  const wrapper = document.querySelector(".l-reviews-swiper");
+
+  wrapper.addEventListener("mouseenter", () => {
+    scrolling = false;
+  });
+
+  wrapper.addEventListener("mouseleave", () => {
+    scrolling = true;
+  });
 }
 
 window.addEventListener("load", initReviewsSwiper);
 
-let resizeTimer = null;
+let resizeTimer;
 window.addEventListener("resize", () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(initReviewsSwiper, 200);

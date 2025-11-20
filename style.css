@@ -221,10 +221,11 @@ body {
   display: flex;
 }
 /* GENERAL STYLE */
-.wrapper {
+.m-wrapper {
   display: flex;
   flex-direction: column;
   min-height: 100%;
+  overflow: hidden;
 }
 main {
   flex: 1 1 auto;
@@ -1723,7 +1724,8 @@ header {
     height: 100%;
   }
   .m-possibilities-small-item {
-    max-width: 162px;
+    max-width: 100%;
+    flex: 1 1 20%;
   }
   .m-possibilities-link {
     border: 4px solid #121316;
